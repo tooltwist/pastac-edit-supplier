@@ -23,7 +23,7 @@ module.exports = function(config) {
 
     // base path that will be used to resolve all patterns (eg. files, exclude)
     basePath: '',
-    //basePath: '/Development/projects/drinkcircle/drinkcircle-static-raw/bower_components/pastac-login',
+    //basePath: '/Development/projects/drinkcircle/drinkcircle-static-raw/bower_components/pastac-add-supplier',
 
 
     // frameworks to use
@@ -38,7 +38,7 @@ module.exports = function(config) {
       // <script src="../bower_components/angular/angular.min.js"></script>
       // <script src="../bower_components/bootstrap/dist/js/bootstrap.js" type="text/javascript"></script>
       //
-      // <script src="../dist/pastac-login.js" type="text/javascript"></script>
+      // <script src="../dist/pastac-add-supplier.js" type="text/javascript"></script>
 
 
     	//'bower_components/angular-unstable/angular.js',
@@ -46,12 +46,12 @@ module.exports = function(config) {
       'bower_components/angular/angular.js',
       'bower_components/bootstrap/dist/js/bootstrap.js',
     	'bower_components/angular-mocks/angular-mocks.js',
-      //'dist/pastac-login.js',
-      {pattern: 'dist/pastac-login.js', included: true, served: true, watched: true, nocache: true},
+      //'dist/pastac-add-supplier.js',
+      {pattern: 'dist/pastac-add-supplier.js', included: true, served: true, watched: true, nocache: true},
       //'dist/*.html',
       //'dist/*.css',
     	'test/spec/example.js',
-      //{pattern: 'dist/pastac-login.html', included: false, served: true, watched: true, nocache: true}
+      //{pattern: 'dist/pastac-add-supplier.html', included: false, served: true, watched: true, nocache: true}
       'dist/**/*.html'
     ],
 

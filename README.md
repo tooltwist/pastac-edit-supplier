@@ -4,7 +4,7 @@ This module is treated as a standard Angular 1 component. To use it on an Angula
 1. Download the component into your project
 
     ```shell
-    $ bower install pastac-login --save  
+    $ bower install pastac-add-supplier --save  
     ```
 
 1. Include the component in your page
@@ -13,21 +13,34 @@ This module is treated as a standard Angular 1 component. To use it on an Angula
     script(src="bower_components/jquery/dist/jquery.js" type="text/javascript")  
     script(src="bower_components/angular/angular.min.js")  
     script(src="bower_components/bootstrap/dist/js/bootstrap.js" type="text/javascript")  
-    script(src="bower_components/pastac-login/dist/pastac-login.js" type="text/javascript")  
+    script(src="bower_components/pastac-add-supplier/dist/pastac-add-supplier.js" type="text/javascript")  
     ```
 
 1. Use the component in your Pug files (formerly called Jade)  
 
     ```pug
-    pastac-login(initial-name="Turtle" on-done="sayHello(name)")  
+    pastac-add-supplier(jwt="jwt" handler="handler")
     ```
+
+  Optional parameters include `supplier-type`, which is used to replace the work 'Supplier', and `template`,
+  which can be your custom version of the component template.
 
 
 1. Invoke the module in your Angular initialization
 
     ```javascript
-    var module = angular.module('myApp', [ 'pastac-login' ]);  
+    var module = angular.module('myApp', [ 'pastac-add-supplier' ]);  
     ...
+
+    $scope.handler = {
+      onAddSupplier: function(successResponse, errorResponse) {
+        if (successResponse) {
+          var supplierId = successResponse.supplierId;
+          alert('New supplier is ' + supplierId)
+        }
+      }
+    }
+
     ```
 
 

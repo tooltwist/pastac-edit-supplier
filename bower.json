@@ -1,5 +1,5 @@
 {
-  "name": "pastac-login",
+  "name": "pastac-add-supplier",
   "version": "0.0.4",
   "dependencies": {
     "bootstrap": "^3.3.7",

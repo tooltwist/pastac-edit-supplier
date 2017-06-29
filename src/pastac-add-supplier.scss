@@ -1,0 +1,21 @@
+////
+/// @author Philip Callender
+/// @group component
+///
+
+  // A spinner object, to show while waiting
+  .pastac-add-supplier-spinner {
+      -animation: spinnerKeyFrame .7s infinite linear;
+      -webkit-animation: spinnerKeyFrame2 .7s infinite linear;
+      margin-right: 12px;
+  }
+
+  @keyframes spinnerKeyFrame {
+    from { transform: scale(1) rotate(0deg);}
+    to { transform: scale(1) rotate(360deg);}
+  }
+
+  @-webkit-keyframes spinnerKeyFrame2 {
+    from { -webkit-transform: rotate(0deg);}
+    to { -webkit-transform: rotate(360deg);}
+  }

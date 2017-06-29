@@ -118,7 +118,7 @@ gulp.task('sassdoc', function () {
       crowdhound: 'Crowdhound.io',
       teaservice: 'TEAservice.io',
     },
-    //basePath: 'https://github.com/tooltwist/pastac-login/tree/master/src',
+    //basePath: 'https://github.com/tooltwist/pastac-add-supplier/tree/master/src',
     theme: 'flippant'
   };
 
@@ -177,11 +177,11 @@ gulp.task('serve', function() {
   browserSync.init({
       server: {
         baseDir: '../..',
-        // index: "bower_components/pastac-login/test/index.html",
+        // index: "bower_components/pastac-add-supplier/test/index.html",
         middleware: [{
           route: "/",
           handle: (req, res, next) => {
-            res.writeHead(302,  { 'Location': '/bower_components/pastac-login/test/test-navbar.html' })
+            res.writeHead(302,  { 'Location': '/bower_components/pastac-add-supplier/test/test-add-supplier.html' })
             res.end()
             next()
           }
