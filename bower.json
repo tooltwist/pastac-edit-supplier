@@ -1,5 +1,5 @@
 {
-  "name": "pastac-add-supplier",
+  "name": "pastac-edit-supplier",
   "version": "0.0.4",
   "dependencies": {
     "bootstrap": "^3.3.7",

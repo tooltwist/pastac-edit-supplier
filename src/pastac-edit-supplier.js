@@ -1,9 +1,9 @@
 'use strict';
 
-angular.module('pastac-add-supplier', [])
+angular.module('pastac-edit-supplier', [])
 
-.component('pastacAddSupplier', {
-  controller: PastacAddSupplierController,
+.component('pastacEditSupplier', {
+  controller: PastacEditSupplierController,
   controllerAs: 'ctrl',
   bindings: {
     // Bind parameters from the HTML element that invokes this
@@ -15,7 +15,7 @@ angular.module('pastac-add-supplier', [])
   },
 
   templateUrl: function($element, $attrs) {
-    var t = '/bower_components/pastac-add-supplier/dist/pastac-add-supplier.html';
+    var t = '/bower_components/pastac-edit-supplier/dist/pastac-edit-supplier.html';
     if ($attrs.template) {
       t = $attrs.template;
     }
@@ -26,7 +26,7 @@ angular.module('pastac-add-supplier', [])
 });
 
 
-function PastacAddSupplierController($scope, $timeout, $http) {
+function PastacEditSupplierController($scope, $timeout, $http) {
   var ctrl = this;
 
   ctrl.$onInit = function() {

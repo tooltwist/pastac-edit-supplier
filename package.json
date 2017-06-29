@@ -1,5 +1,5 @@
 {
-  "name": "pastac-add-supplier",
+  "name": "pastac-edit-supplier",
   "version": "0.0.3",
   "description": "exampleComponent",
   "keywords": [
@@ -12,8 +12,8 @@
     "crowdhound",
     "tooltwist"
   ],
-  "homepage": "https://github.com/tooltwist/pastac-add-supplier",
-  "bugs": "https://github.com/tooltwist/pastac-add-supplier/issues",
+  "homepage": "https://github.com/tooltwist/pastac-edit-supplier",
+  "bugs": "https://github.com/tooltwist/pastac-edit-supplier/issues",
   "author": {
     "name": "Philip Callender",
     "email": "",
@@ -21,7 +21,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/tooltwist/pastac-add-supplier.git"
+    "url": "https://github.com/tooltwist/pastac-edit-supplier.git"
   },
   "licenses": [
     {
