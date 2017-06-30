@@ -181,13 +181,13 @@ gulp.task('serve', function() {
         middleware: [{
           route: "/",
           handle: (req, res, next) => {
-            res.writeHead(302,  { 'Location': '/bower_components/pastac-edit-supplier/test/test-add-supplier.html' })
+            res.writeHead(302,  { 'Location': '/bower_components/pastac-edit-supplier/test/test-edit-supplier.html' })
             res.end()
             next()
           }
         }]
       },
-      port: 3030,
+      port: 3031,
       //reloadDelay: 200 // Give the server time to pick up the new files.
   });
   return gulp

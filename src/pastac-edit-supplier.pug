@@ -1,24 +1,158 @@
 block content
 
-  // Modal
-  #add-supplier-modal.modal.fade(role="dialog")
-    .modal-dialog
-      .modal-content
-        .modal-header.admin-colors
-          button.close(type="button" data-dismiss="modal") &times;
-          h4.modal-title Add a new {{ctrl.label}}
-        .modal-body
-          .form-group
-            label(for="new-drinkmaker-name") Name of new {{ctrl.label}}
-            input#new-drinkmaker-name.form-control(ng-model="ctrl.supplierName")
-            label(for="new-drinkmaker-email") Contact email
-            input#new-drinkmaker-email.form-control(type="email" ng-model="ctrl.contactEmail")
-            label(for="new-drinkmaker-abn") ABN
-            input#new-drinkmaker-abn.form-control(type="number" ng-model="ctrl.abn")
-          .alert.alert-danger(ng-hide="!ctrl.errmsg")
-            | {{ctrl.errmsg}}
-        .modal-footer.admin-colors
-          button.btn.btn-danger(type="button" ng-click="ctrl.newDrinkmaker()" ng-disabled="ctrl.inProgress")
-            .spinner.glyphicon.glyphicon-refresh(ng-hide="!ctrl.inProgress")
-            | Add {{ctrl.label}}
-          button.btn.btn-danger(type="button" data-dismiss="modal") Close
+  .alert.alert-warning(ng-hide="ctrl.supplier") Unknown supplier
+
+  // Pane for single record
+  .card#supplier-single-record-pane(ng-hide="!ctrl.supplier")
+    .row
+      .col-md-12
+        h1 {{ctrl.headingForRecordPane}}  ({{ctrl.supplier.id}})
+        
+        .alert.alert-danger(ng-hide="ctrl.supplier.deleted==0")
+          strong
+            | Warning!&nbsp;&nbsp;
+          | &nbsp;This supplier has been marked as deleted.
+          
+        .alert.alert-danger(ng-hide="ctrl.supplier.deleted==1 || ctrl.supplier.is_active>0")
+          strong
+            | Warning!&nbsp;&nbsp;
+          | This supplier is not currently active.
+
+        // Buttons above
+        .actions-wrap
+          a.btn.pull-right.btn-success(ng-click="ctrl.doSave()") Save
+          a.btn.pull-right(ng-click="ctrl.doBack()" ng-hide="!ctrl.backButton") Back
+        //- actions-wrap
+
+        
+        ul.nav.nav-tabs
+          li.active
+            a(href="#pastac-edit-supplier-tab-details" data-toggle="tab") Details
+          li
+            a(href="#pastac-edit-supplier-tab-story" data-toggle="tab") Story
+          li
+            a(href="#pastac-edit-supplier-tab-logo" data-toggle="tab") Logo
+          li
+            a(href="#pastac-edit-supplier-tab-banner" data-toggle="tab") Banner
+          li
+            a(href="#pastac-edit-supplier-tab-directory" data-toggle="tab") Directory Photo
+          li(ng-hide="!ctrl.showProducts")
+            a(href="#pastac-edit-supplier-tab-products" data-toggle="tab") Products
+        br
+
+
+
+
+        .tab-content.clearfix
+          
+
+          // Product details pane
+          #pastac-edit-supplier-tab-details.tab-pane.active
+            // The fields generated from metadata are inserted here.
+            #supplier2_recordDiv
+
+            // Admin-only fields generated from metadata are inserted here.
+            #supplier2_adminDiv
+              
+              
+          #pastac-edit-supplier-tab-story.tab-pane
+            .form-group
+              label(for='product-longDescription') Story
+              // See https://github.com/lemonde/angular-ckeditor
+              div(ckeditor="ctrl.ckeditorOptions", ng-model="ctrl.supplier.story", ready="onReady()")
+              br
+            
+
+          #pastac-edit-supplier-tab-logo.tab-pane
+            h3 Logo
+            | {{ctrl.supplier.logo}}
+            br
+            img.img-responsive(ng-src="{{ctrl.supplier.logo}}")
+
+
+          #pastac-edit-supplier-tab-banner.tab-pane
+            h3 Banner
+            | {{ctrl.supplier.banner}}
+            br
+            img.img-responsive(ng-src="{{ctrl.supplier.banner}}")
+            
+
+          #pastac-edit-supplier-tab-directory.tab-pane
+            h3 Directory Photo
+            small
+              | {{ctrl.supplier.directory_photo}}
+            br
+            img.img-responsive.center(ng-src="{{ctrl.supplier.directory_photo}}")
+              
+            br
+            br
+            br
+            h3 Load a new image
+            | You can load an image from your machine, or copy an image from a URL.
+            br
+            br
+            
+            .form-group
+              label(for='supplier-directory-url') Copy an image
+              input#supplier-directory-url.form-control(ng-model="ctrl.directoryUrl" type='text', placeholder='URL of an image to copy')
+              br
+
+            
+            //input.form-control(rows='2' ng-model="ctrl.message" placeholder="Enter your description here")
+            //textarea.form-control(rows='2' ng-model="ctrl.message" placeholder="Enter your description here")
+
+            .form-group
+              label(for='supplier-directory-url') Upload an image
+            .drop-photo(ngf-select ngf-drop class="drop-box" ng-model="ctrl.file" ngf-drag-over-class="'dragover'" ngf-multiple="false" ngf-pattern="'image/*,video/*'" zng-hide="!ctrl.showDropArea()")
+              i.fa.fa-picture-o
+              br
+              span Select File
+              span(ng-show="ctrl.dropAvailable") &nbsp;or Drop File
+            //- drop-photo
+
+            img(ngf-src="ctrl.file || '/assets/images/cleardot.png'" class="img-responsive" style="max-height: 400px")
+            video(controls ngf-src="ctrl.file")
+            #percentage
+              #progress(ng-hide="!ctrl.showProgressBar()")
+                .small.green
+                  br
+                  | Loading {{ctrl.filename}}
+                  | &nbsp;&nbsp;&nbsp; size={{ctrl.filesize}} bytes
+                  | &nbsp;&nbsp;&nbsp; ({{ctrl.getPercentage()}}% complete)
+                  br
+                  .progress(style="height: 10px;")
+                    .progress-bar.progress-bar-striped.active(role="progressbar" aria-valuenow="{{ctrl.getPercentage()}}" aria-valuemin="0" aria-valuemax="100" ng-style="{width : ( ctrl.getPercentage() + '%' ) }")
+                      .sr-only {{ctrl.getPercentage()}}% Complete (warning)
+              //- #progress
+              #processing(ng-hide="!ctrl.showProcessing()")
+                .small.green
+                  br
+                  i.fa.fa-refresh.fa-spin.fa-fw
+                  //  .sr-only Loading...
+                  | Processing image
+              //- #processing
+            //- #percentage
+          //- #pastac-edit-supplier-tab-directory
+          
+          
+          #pastac-edit-supplier-tab-products.tab-pane
+            table.table.table-condensed.table-hover
+              tr
+                th Product Id
+                th Name
+                th Displayed
+              tr(ng-repeat="product in ctrl.products" ng-click="ctrl.doSelectProduct(product.productId)")
+                td {{product.productId}}
+                td {{product.name}}
+                td {{product.isDisplayed}}
+
+
+
+        // Buttons below
+        hr
+        .actions-wrap
+          a.btn.pull-right.btn-success(ng-click="ctrl.doSave()") Save
+          a.btn.pull-right(ng-click="ctrl.doBack()" ng-hide="!ctrl.backButton") Back
+      //- col-md-12
+    //- actions-wrap
+  //- card
