@@ -3,7 +3,7 @@ block content
   .alert.alert-warning(ng-hide="ctrl.supplier") Unknown supplier
 
   // Pane for single record
-  .card#supplier-single-record-pane(ng-hide="!ctrl.supplier")
+  .card#supplier-single-record-pane.pastac-edit-supplier(ng-hide="!ctrl.supplier")
     .row
       .col-md-12
         h1 {{ctrl.headingForRecordPane}}  ({{ctrl.supplier.id}})
@@ -31,7 +31,7 @@ block content
           li
             a(href="#pastac-edit-supplier-tab-story" data-toggle="tab") Story
           li
-            a(href="#pastac-edit-supplier-tab-logo" data-toggle="tab") Logo
+            a(href="#pastac-edit-supplier-tab-logo" data-toggle="tab").active Logo
           li
             a(href="#pastac-edit-supplier-tab-banner" data-toggle="tab") Banner
           li
@@ -43,11 +43,14 @@ block content
 
 
 
+        //- .tab-content.clearfix
+        //-   div(Zng-hide="variant.is_deleted || variant.is_approved")
+        //-     .alert.alert-info Warning: This supplier will not be able to accept orders until it is switched to Active.
         .tab-content.clearfix
           
 
           // Product details pane
-          #pastac-edit-supplier-tab-details.tab-pane.active
+          #pastac-edit-supplier-tab-details.tab-pane.activeZ
             // The fields generated from metadata are inserted here.
             #supplier2_recordDiv
 
@@ -63,79 +66,227 @@ block content
               br
             
 
-          #pastac-edit-supplier-tab-logo.tab-pane
-            h3 Logo
-            | {{ctrl.supplier.logo}}
-            br
-            img.img-responsive(ng-src="{{ctrl.supplier.logo}}")
+          //
+          //      Tab for loading the supplier logo
+          //
+          #pastac-edit-supplier-tab-logo.tab-pane.active
+            h3 Supplier Logo
+            .row
+              .col-md-3
+                //- | path: &nbsp;
+                //- br
+                //- strong {{ctrl.supplier.logo}}
+                //- br
+                //- | thumbnail:
+                //- br
+                //- strong {{ctrl.supplier._logo_thumbnail}}
+                //- br
+                img.img-responsive(ng-src="{{ctrl.supplier._logo_thumbnail}}")
+              .col-md-1
+              .col-md-8
+                .image-loader
+                  .head
+                    a(href="#pastac-edit-supplier-tab-load-logo", role="tab", data-toggle="tab")
+                      i.fa.fa-picture-o
+                      | Upload Image
+                  //- head
+                  .content                
+                    .tab-pane#pastac-edit-supplier-tab-load-logo(role="tabpanel")
+                      // Drop area
+                      .drop-photo.drop-box(ngf-select ngf-drop ng-model="ctrl.logoFile" ngf-drag-over-class="'dragover'" ngf-multiple="false" ngf-pattern="'image/*,video/*'" ng-hide="ctrl.logoFile")
+                        i.fa.fa-picture-o
+                        br
+                        span Select File
+                        span(ng-show="ctrl.dropAvailable") &nbsp;or Drop File
+                      //- drop-photo
+                      // Preview image and show loading progress
+                      img.img-responsive(ngf-src="ctrl.logoFile || '/assets/images/cleardot.png'" style="max-height: 400px")
+                      //video(controls ngf-src="ctrl.logoFile")
+                      #percentage
+                        #progress(ng-hide="!ctrl.showProgressBar('logo')")
+                          .small.green
+                            br
+                            | Loading {{ctrl.logoFilename}}
+                            | &nbsp;&nbsp;&nbsp; size={{ctrl.logoFilesize}} bytes
+                            | &nbsp;&nbsp;&nbsp; ({{ctrl.logoPercentage}}% complete)
+                            br
+                            .progress(style="height: 10px;")
+                              .progress-bar.progress-bar-striped.active(role="progressbar" aria-valuenow="{{ctrl.logoPercentage}}" aria-valuemin="0" aria-valuemax="100" ng-style="{width : ( ctrl.logoPercentage + '%' ) }")
+                                .sr-only {{ctrl.logoPercentage}}% Complete (warning)
+                        #processing(ng-hide="!ctrl.showProcessing('logo')")
+                          .small.green
+                            br
+                            i.fa.fa-refresh.fa-spin.fa-fw
+                            //  .sr-only Loading...
+                            | Processing image
+                    //- .tab-pane
+                  //- .content
+                  .controls(ng-hide="!ctrl.logoFile || ctrl.showProgressBar('logo') || ctrl.showProcessing('logo')")
+                    // The next line sets the height of the footer, when all else is hidden
+                    a &nbsp;
+                    a.post(ng-click="ctrl.cancelPost('logo')")
+                      i.fa.fa-remove
+                      | Cancel
+                    a.post(ng-click="ctrl.doUploadImage(ctrl.supplier, 'logo')")
+                      i.fa.fa-send-o
+                      | Upload
+                    //- a
+                  //- controls
 
 
           #pastac-edit-supplier-tab-banner.tab-pane
-            h3 Banner
-            | {{ctrl.supplier.banner}}
-            br
-            img.img-responsive(ng-src="{{ctrl.supplier.banner}}")
-            
+            h3 Supplier Banner
+            .row
+              .col-md-12
+                //- | {{ctrl.supplier.banner}}
+                //- br
+                //- | {{ctrl.supplier._banner_thumbnail}}
+                //- br
+                img.img-responsive(ng-src="{{ctrl.supplier._banner_banner}}")
+              .col-md-12   
+                .image-loader              
+                  .head
+                    a(href="#pastac-edit-supplier-tab-load-banner", role="tab", data-toggle="tab")
+                      i.fa.fa-picture-o
+                      | Upload Image
+                  //- .head
+                  .content                
+                    .tab-pane#pastac-edit-supplier-tab-load-banner(role="tabpanel")
+                      // Drop area
+                      .drop-photo.drop-box(ngf-select ngf-drop ng-model="ctrl.bannerFile" ngf-drag-over-class="'dragover'" ngf-multiple="false" ngf-pattern="'image/*,video/*'" ng-hide="ctrl.bannerFile")
+                        i.fa.fa-picture-o
+                        br
+                        span Select File
+                        span(ng-show="ctrl.dropAvailable") &nbsp;or Drop File
+                      //- drop-photo
+                      // Preview image and show loading progress
+                      img.img-responsive(ngf-src="ctrl.bannerFile || '/assets/images/cleardot.png'" style="max-height: 400px")
+                      //- video(controls ngf-src="ctrl.file")
+                      #percentage
+                        #progress(ng-hide="!ctrl.showProgressBar('banner')")
+                          .small.green
+                            br
+                            | Loading {{ctrl.bannerFilename}}
+                            | &nbsp;&nbsp;&nbsp; size={{ctrl.bannerFilesize}} bytes
+                            | &nbsp;&nbsp;&nbsp; ({{ctrl.bannerPercentage}}% complete)
+                            br
+                            .progress(style="height: 10px;")
+                              .progress-bar.progress-bar-striped.active(role="progressbar" aria-valuenow="{{ctrl.bannerPercentage}}" aria-valuemin="0" aria-valuemax="100" ng-style="{width : ( ctrl.bannerPercentage + '%' ) }")
+                                .sr-only {{ctrl.bannerPercentage}}% Complete (warning)
+                        #processing(ng-hide="!ctrl.showProcessing('banner')")
+                          .small.green
+                            br
+                            i.fa.fa-refresh.fa-spin.fa-fw
+                            //  .sr-only Loading...
+                            | Processing image
+                    //- .tab-pane
+                  //- .content
+                  .controls(ng-hide="!ctrl.bannerFile || ctrl.showProgressBar('banner') || ctrl.showProcessing('banner')")
+                    // The next line sets the height of the footer, when all else is hidden
+                    a &nbsp;
+                    a.post(ng-click="ctrl.cancelPost('banner')")
+                      i.fa.fa-remove
+                      | Cancel
+                    a.post(ng-click="ctrl.doUploadImage(ctrl.supplier, 'banner')")
+                      i.fa.fa-send-o
+                      | Upload
+                    //- a
+                  //- controls
 
+            
+          //
+          //  Tab to load directory_photo image
+          //
           #pastac-edit-supplier-tab-directory.tab-pane
             h3 Directory Photo
-            small
-              | {{ctrl.supplier.directory_photo}}
-            br
-            img.img-responsive.center(ng-src="{{ctrl.supplier.directory_photo}}")
+            .row
+              .col-md-3
+                //- small
+                //-   | {{ctrl.supplier.directory_photo}}
+                //-   br
+                //-   | {{ctrl.supplier._directory_photo_thumbnail}}
+                //- br
+                img.img-responsive.center(ng-src="{{ctrl.supplier._directory_photo_thumbnail}}")
               
-            br
-            br
-            br
-            h3 Load a new image
-            | You can load an image from your machine, or copy an image from a URL.
-            br
-            br
-            
-            .form-group
-              label(for='supplier-directory-url') Copy an image
-              input#supplier-directory-url.form-control(ng-model="ctrl.directoryUrl" type='text', placeholder='URL of an image to copy')
-              br
+              .col-md-1
+              .col-md-8
+                .image-loader
+                  
+                  // Load image header
+                  .head
+                    a(href="#pastac-edit-supplier-tab-load-logo", role="tab", data-toggle="tab")
+                      i.fa.fa-picture-o
+                      | Upload Image
+                  //- head
+                  .content                
+                    .tab-pane#pastac-edit-supplier-tab-load-logo(role="tabpanel")
+                      // Drop area
+                      .drop-photo.drop-box(ngf-select ngf-drop ng-model="ctrl.directory_photoFile" ngf-drag-over-class="'dragover'" ngf-multiple="false" ngf-pattern="'image/*,video/*'" ng-hide="ctrl.directory_photoFile")
+                        i.fa.fa-picture-o
+                        br
+                        span Select File
+                        span(ng-show="ctrl.dropAvailable") &nbsp;or Drop File
+                      //- drop-photo
+                      // Preview image and show loading progress
+                      img.img-responsive(ngf-src="ctrl.directory_photoFile || '/assets/images/cleardot.png'" style="max-height: 400px")
+                      //- video(controls ngf-src="ctrl.file")
+                      #percentage
+                        #progress(ng-hide="!ctrl.showProgressBar('directory_photo')")
+                          .small.green
+                            br
+                            | Loading {{ctrl.directory_photoFilename}}
+                            | &nbsp;&nbsp;&nbsp; size={{ctrl.directory_photoFilesize}} bytes
+                            | &nbsp;&nbsp;&nbsp; ({{ctrl.directory_photoPercentage}}% complete)
+                            br
+                            .progress(style="height: 10px;")
+                              .progress-bar.progress-bar-striped.active(role="progressbar" aria-valuenow="{{ctrl.directory_photoPercentage}}" aria-valuemin="0" aria-valuemax="100" ng-style="{width : ( ctrl.directory_photoPercentage + '%' ) }")
+                                .sr-only {{ctrl.directory_photoPercentage}}% Complete (warning)
+                        #processing(ng-hide="!ctrl.showProcessing('directory_photo')")
+                          .small.green
+                            br
+                            i.fa.fa-refresh.fa-spin.fa-fw
+                            //  .sr-only Loading...
+                            | Processing image
+                    //- .tab-pane
+                  //- .content
+                  .controls(ng-hide="!ctrl.directory_photoFile || ctrl.showProgressBar('directory_photo') || ctrl.showProcessing('directory_photo')")
+                    // The next line sets the height of the footer, when all else is hidden
+                    a &nbsp;
+                    a.post(ng-click="ctrl.cancelPost('directory_photo')")
+                      i.fa.fa-remove
+                      | Cancel
+                    a.post(ng-click="ctrl.doUploadImage(ctrl.supplier, 'directory_photo')")
+                      i.fa.fa-send-o
+                      | Upload
+                    //- a
+                  //- controls
+              
+          // Modal
+          #pastac-edit-supplier-add-product-modal.modal.fade(role="dialog")
+            .modal-dialog
+              .modal-content
+                .modal-header.admin-colors
+                  button.close(type="button" data-dismiss="modal") &times;
+                  h4.modal-title Add a new Product
+                .modal-body
+                  .form-group
+                    label(for="pastac-edit-supplier-new-product-name") Name of new Product
+                    input#pastac-edit-supplier-new-product-name.form-control(ng-model="ctrl.productName")
+                  .alert.alert-danger(ng-hide="!ctrl.errmsg")
+                    | {{ctrl.errmsg}}
+                .modal-footer.admin-colors
+                  button.btn.btn-danger(type="button" ng-click="ctrl.doNewProduct()" ng-disabled="ctrl.newProductInProgress")
+                    .spinner.glyphicon.glyphicon-refresh(ng-hide="!ctrl.newProductInProgress")
+                    | Add {{ctrl.label}}
+                  button.btn.btn-danger(type="button" data-dismiss="modal") Close
 
-            
-            //input.form-control(rows='2' ng-model="ctrl.message" placeholder="Enter your description here")
-            //textarea.form-control(rows='2' ng-model="ctrl.message" placeholder="Enter your description here")
-
-            .form-group
-              label(for='supplier-directory-url') Upload an image
-            .drop-photo(ngf-select ngf-drop class="drop-box" ng-model="ctrl.file" ngf-drag-over-class="'dragover'" ngf-multiple="false" ngf-pattern="'image/*,video/*'" zng-hide="!ctrl.showDropArea()")
-              i.fa.fa-picture-o
-              br
-              span Select File
-              span(ng-show="ctrl.dropAvailable") &nbsp;or Drop File
-            //- drop-photo
-
-            img(ngf-src="ctrl.file || '/assets/images/cleardot.png'" class="img-responsive" style="max-height: 400px")
-            video(controls ngf-src="ctrl.file")
-            #percentage
-              #progress(ng-hide="!ctrl.showProgressBar()")
-                .small.green
-                  br
-                  | Loading {{ctrl.filename}}
-                  | &nbsp;&nbsp;&nbsp; size={{ctrl.filesize}} bytes
-                  | &nbsp;&nbsp;&nbsp; ({{ctrl.getPercentage()}}% complete)
-                  br
-                  .progress(style="height: 10px;")
-                    .progress-bar.progress-bar-striped.active(role="progressbar" aria-valuenow="{{ctrl.getPercentage()}}" aria-valuemin="0" aria-valuemax="100" ng-style="{width : ( ctrl.getPercentage() + '%' ) }")
-                      .sr-only {{ctrl.getPercentage()}}% Complete (warning)
-              //- #progress
-              #processing(ng-hide="!ctrl.showProcessing()")
-                .small.green
-                  br
-                  i.fa.fa-refresh.fa-spin.fa-fw
-                  //  .sr-only Loading...
-                  | Processing image
-              //- #processing
-            //- #percentage
-          //- #pastac-edit-supplier-tab-directory
           
           
           #pastac-edit-supplier-tab-products.tab-pane
+            div(ng-hide="ctrl.currentUser.isAdmin")
+              a.btn.btn-danger.btn-sm.pull-right(data-toggle="modal" data-target="#pastac-edit-supplier-add-product-modal") Add a new Product
+              br
+              br
             table.table.table-condensed.table-hover
               tr
                 th Product Id
@@ -149,10 +300,10 @@ block content
 
 
         // Buttons below
-        hr
-        .actions-wrap
-          a.btn.pull-right.btn-success(ng-click="ctrl.doSave()") Save
-          a.btn.pull-right(ng-click="ctrl.doBack()" ng-hide="!ctrl.backButton") Back
+        //- hr
+        //- .actions-wrap
+        //-   a.btn.pull-right.btn-success(ng-click="ctrl.doSave()") Save
+        //-   a.btn.pull-right(ng-click="ctrl.doBack()" ng-hide="!ctrl.backButton") Back
       //- col-md-12
     //- actions-wrap
   //- card

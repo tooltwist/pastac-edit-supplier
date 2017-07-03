@@ -28,9 +28,10 @@ angular.module('pastac-edit-supplier', [])
 });
 
 
-function PastacEditSupplierController($scope, $timeout, $http, $compile) {
+function PastacEditSupplierController($scope, $timeout, $http, $compile, Upload) {
   var ctrl = this;
   var _supplierId = null;
+  var cl = null; // Cloudinary API
 
   var LABEL = 'Supplier List';
   var SUPPLIER_VIEW = 'supplier';
@@ -241,6 +242,12 @@ console.log('Set record:', ctrl.supplier);
         loadProductsForSupplier($scope, ctrl.teaContext, ctrl.supplier.id);
       }
 
+      // Set the image paths
+      setImagePaths(ctrl.supplier, 'logo', ctrl.supplier.logo);
+      setImagePaths(ctrl.supplier, 'banner', ctrl.supplier.banner);
+      setImagePaths(ctrl.supplier, 'directory_photo', ctrl.supplier.directory_photo);
+
+
     });
 
 
@@ -309,6 +316,8 @@ console.log('Set record:', ctrl.supplier);
 
   }//- loadProductsForSupplier()
 
+
+//doNewProduct
 
   /*
    *
@@ -381,5 +390,224 @@ console.log('Set record:', ctrl.supplier);
       }
     });
   }
+
+
+  /*
+   *                IMAGE LOADING
+   */
+  ctrl.doUploadImage = function(supplier, prefix) {
+     console.log('doUploadImage(prefix:' + prefix + ')');
+
+    // console.log('doUploadImage. supplier=', supplier);
+    // See https://github.com/danialfarid/ng-file-upload
+    var url = '//' + TEASERVICE_HOST + ':' + TEASERVICE_PORT + '/v3/' + TEASERVICE_APIKEY + '/supplierImage';
+    var data = {
+      image_type: prefix,
+      supplier_id: supplier.id
+    };
+    console.log('URL=' + url);
+    console.log('data is ', data);
+    console.log('file is ', file);
+
+
+    // See if we have a photo or video to load.
+    //  var activeTabId = $(".composer .tab-pane.active").attr('id');
+    var file = ctrl[prefix+'File'];
+    if (file) {
+      // if (file && activeTabId === 'composer-tab-photo-video') {
+
+      // Have an image being loaded
+      ctrl[prefix+'Filesize'] = accounting.formatNumber(file.size);
+      ctrl[prefix+'Filename'] = file.name;
+      data.file = file;
+      Upload.upload({
+        url: url,
+        headers: {
+          "access-token": "0613952f81da9b3d0c9e4e5fab123437",
+          "version": "2.0.0"
+        },
+        data: data
+      }).then(function (resp) {
+        console.log('resp: ', resp);
+        // console.log('Success ' + resp.config.data.file.name + 'uploaded. Response: ' + resp.data);
+
+        // alert('Upload has returned')
+        var publicId = resp.data.publicId;
+        console.log('Upload completed to: ' + publicId);
+        $timeout(function() {
+          console.log('Uploading details.');
+
+          // Update our supplier record here, so the screen updates
+          switch (prefix) {
+            case 'logo':
+              supplier.logo = 'cloudinary:' + publicId;
+              setImagePaths(supplier, 'logo', supplier.logo)
+              ctrl.logoFile = null;
+
+              if (ctrl.handler && ctrl.handler.onLogoUpdate) {
+                ctrl.handler.onLogoUpdate(supplier);
+              }
+              break;
+
+            case 'banner':
+              supplier.banner = 'cloudinary:' + publicId;
+              setImagePaths(supplier, 'banner', supplier.banner)
+              ctrl.bannerFile = null;
+
+              if (ctrl.handler && ctrl.handler.onBannerUpdate) {
+                ctrl.handler.onBannerUpdate(supplier);
+              }
+              break;
+
+            case 'directory_photo':
+              supplier.directory_photo = 'cloudinary:' + publicId;
+              setImagePaths(supplier, 'directory_photo', supplier.directory_photo)
+              ctrl.directory_photoFile = null;
+
+              if (ctrl.handler && ctrl.handler.onDirectoryPhotoUpdate) {
+                ctrl.handler.onDirectoryPhotoUpdate(supplier);
+              }
+              break;
+
+            default:
+              // Should not be possible
+              alert('Unknown image updated. prefix=' + prefix + '.')
+          }
+
+        }, 10);
+
+      }, function (resp) {
+
+        // Error
+        console.log('Error status: ' + resp.status);
+        ctrl[prefix+'file'] = null;
+        ctrl[prefix+'Percentage'] = null;
+        alert('Sorry, the upload failed.');
+
+      }, function (evt) {
+        // Progress
+        console.log('evt=', evt);
+        // Show the image loading progress
+        var perc = parseInt(100.0 * evt.loaded / evt.total);
+        console.log('progress: ' + perc + '% ' + evt.config.data.file.name);
+        $timeout(function(){
+          ctrl[prefix+'Percentage'] = perc;
+        }, 1);
+      });
+    }
+  };//- ctrl.doUploadImage()
+
+
+  ctrl.cancelPost = function(prefix) {
+    ctrl[prefix+'file'] = null;
+    ctrl[prefix+'Percentage'] = null;
+  }
+
+  // ctrl.haveFile = function(prefix) {
+  //   //console.log('file is ', ctrl.file);
+  //   if (ctrl[prefix+'File']) return true;
+  //   return false;
+  // }
+
+  // ctrl.showDropArea = function(prefix) {
+  //   if (ctrl[prefix+'File']) {
+  //     return false;
+  //   }
+  //   return true;
+  // }
+
+  // ctrl.showImage = function(prefix) {
+  //   if (ctrl[prefix+'File']) {
+  //     return true;
+  //   }
+  //   return false;
+  // }
+
+  ctrl.showProgressBar = function(prefix) {
+    return (
+      ctrl[prefix+'File']
+      && ctrl[prefix+'Percentage']
+      && ctrl[prefix+'Percentage'] < 100
+    );
+  }
+
+  ctrl.showProcessing = function(prefix) {
+    // if (prefix == 'banner') {
+    //   console.log('showProcessing(' + prefix + ') 1: ', ctrl[prefix+'File'], ctrl[prefix+'Percentage']);
+    //   console.log('showProcessing(' + prefix + ') 2: ', ctrl['bannerFile'], ctrl['bannerPercentage']);
+    //   console.log('showProcessing(' + prefix + ') 3: ', ctrl.bannerFile, ctrl.bannerPercentage);
+    // }
+    return (
+      ctrl[prefix+'File']
+      && ctrl[prefix+'Percentage']
+      && ctrl[prefix+'Percentage'] == 100
+    );
+  }
+
+  // ctrl.getPercentage = function(prefix) {
+  //   return ctrl[prefix+'Percentage'];
+  // }
+
+  //ZZZZ IS THIS USED?
+  ctrl.doToggleIsDisplayed = function(variant, image) {
+    // if (image.is_displayed == 1) {
+    //   image.is_displayed = 0;
+    // } else {
+    //   image.is_displayed = 1;
+    // }
+    // saveProductImageOrderAndIsDisplayed(variant);
+  }
+
+  function setImagePaths(record, prefix, image) {
+    console.log('setImagePaths(prefix:' + prefix + ', image:' + image + ')');
+
+    const CLOUDINARY_PREFIX = 'cloudinary:';
+
+    var thumbnailVar = '_' + prefix + '_thumbnail';
+    var rawVar = '_' + prefix + '_raw';
+    var bannerVar = '_' + prefix + '_banner';
+
+
+    if (image.startsWith(CLOUDINARY_PREFIX)) {
+      console.log('IS CLOUDINARY IMAGE');
+      // Convert the image to multiple formats
+      if (cl == null) {
+          // alert('init cl')
+          cl = cloudinary.Cloudinary.new( { cloud_name: CLOUDINARY_CLOUD_NAME});
+      }
+
+      // See http://cloudinary.com/documentation/image_transformations#resizing_and_cropping_images
+      var publicId = image.substring(CLOUDINARY_PREFIX.length);
+      var imageName = publicId + '.jpg';
+      // image._logo_raw = cl.url(imageName);
+      // image._cloudinaryImage_lowquality = cl.url(imageName, { width:200, effect:"blur:600", opacity:50, crop: "scale" });
+      //
+      // // console.log('----> ' + image._cloudinaryImage_lowquality);
+      // //console.log('====> ' + cl.imageTab(imageName, { width:100, blur:300, opacity:50 }));
+      // image._cloudinaryImage_320 = cl.url(imageName, { width: 320, crop: "limit"});
+      // image._cloudinaryImage_480 = cl.url(imageName, { width: 480, crop: "limit"});
+      // image._cloudinaryImage_768 = cl.url(imageName, { width: 768, crop: "limit"});
+      // image._cloudinaryImage_992 = cl.url(imageName, { width: 992, crop: "limit"});
+      // image._cloudinaryImage_1200 = cl.url(imageName, { width: 1200, crop: "limit"});
+      // image._cloudinaryImage_1920 = cl.url(imageName, { width: 1920, crop: "limit"});
+      // image._512x512 = cl.url(imageName, { width:512, height: 512, crop: "fit" });
+      record[thumbnailVar] = cl.url(imageName, { width:512, height: 512, crop: "fit" });
+      record[bannerVar] = cl.url(imageName, { width:1920, height: 250, crop: "fit" });
+      record[rawVar] = cl.url(imageName);
+
+      console.log('Setting ' + thumbnailVar + ' to ' + record[thumbnailVar]);
+
+      // var kb = image.image_size / 1024;
+      // image._size = accounting.formatNumber(kb) + ' kb';
+      // console.log('----> ' + image._thumbnail);
+
+    } else {
+
+      // Not a cloudinary image.
+      record[thumbnailVar] = image;
+      record[bannerVar] = image;
+      record[rawVar] = image;
+    }
+  }//- setImagePaths()
 
 }

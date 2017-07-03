@@ -150,6 +150,8 @@ var TEASERVICE_ACCESS_TOKEN = '0613952f81da9b3d0c9e4e5fab123437';
 var TEASERVICE_VERSION = '2.0.0';
 var TEASERVICE_APIKEY = 'test';
 
+const CLOUDINARY_CLOUD_NAME = 'twist-resources';
+
 </script>
 <script src="/assets/vendor/teaservice/teaservice.js" type="text/javascript"></script>
 <script src="../bower_components/pastac-login/dist/tmp-authservice.js" type="text/javascript"></script>
@@ -157,6 +159,9 @@ var TEASERVICE_APIKEY = 'test';
 <script src="../dist/pastac-edit-supplier.js" type="text/javascript"></script>
 <script src="/bower_components/angular-sanitize/angular-sanitize.min.js" type="text/javascript"></script>
 <script src='/bower_components/ng-file-upload/ng-file-upload.min.js', type="text/javascript"></script>
+<script src="/bower_components/accounting/accounting.min.js" type="text/javascript"></script>
+<script src='/bower_components/cloudinary/js/jquery.cloudinary.js' type="text/javascript"></script>
+
 
 <script>
 var module = angular.module('myApp', [ 'pastac-login', 'pastac-edit-supplier'/*, 'ngSanitize'*/, 'ckeditor', 'ngFileUpload' ]);
@@ -181,6 +186,15 @@ module.controller('myCtrl', function($scope, $timeout) {
         var supplierId = successResponse.supplierId;
         alert('New supplier is ' + supplierId)
       }
+    },
+    onLogoUpdate: function(supplier) {
+      alert('handler.onLogoUpdate(): ' + supplier.logo);
+    },
+    onBannerUpdate: function(supplier) {
+      alert('handler.onBannerUpdate(): ' + supplier.banner);
+    },
+    onDirectoryPhotoUpdate: function(supplier) {
+      alert('handler.onDirectoryPhotoUpdate(): ' + supplier.directory_photo);
     }
   }//= handler
 

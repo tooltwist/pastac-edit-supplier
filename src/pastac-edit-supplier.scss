@@ -28,3 +28,115 @@
 #pastac-edit-supplier-tab-products {
   cursor: pointer;
 }
+
+
+
+
+
+.pastac-edit-supplier {
+
+  $font-size 	: 13px;
+
+  .image-loader {
+    & {
+      background: white;
+      border: 1px solid #eee;
+      outline: 1px solid whitesmoke;
+      margin-top: 2px;
+    }
+    .head {
+      padding: 10px 15px !important;
+      background: whitesmoke;
+      a {
+        color: #777;
+        margin: 0 8px;
+        font-size: 14px;
+        i {
+          margin-right: 5px;
+        }
+      }
+    }
+    .content {
+      padding: 15px;
+      > div:not(#composer-tab-events) {
+        textarea {
+          border: 0;
+          box-shadow: none;
+          resize: none;
+        }
+      }
+      &:after {
+        content: "";
+        display: table;
+        clear: both;
+      }
+    }
+    .drop-photo {
+      padding: 10px;
+      border: 2px dashed #ddd;
+      text-align: center;
+      margin-bottom: 15px;
+      i {
+        font-size: 72px;
+        color: #ddd;
+      }
+      span {
+        color: #ccc;
+      }
+    }
+    .controls {
+      padding: 10px 15px;
+      border-top: 1px solid #eee;
+      a {
+        color: #777;
+        margin: 0 8px;
+        font-weight: lighter;
+        text-decoration: none;
+        i {
+          margin-right: 5px;
+        }
+        &.post {
+          float: right;
+          font-weight: normal;
+        }
+        &:hover {
+          color: #ccc;
+        }
+      }
+    }
+  }
+
+  .product-image {
+    margin-bottom: 2px !important;
+    margin-top: 10px;
+  }
+
+  .disabled-product-image {
+    opacity: 0.2;
+    filter: alpha(opacity=20); /* For IE8 and earlier */
+  }
+
+  .selected-product-image {
+    border-color: blue !important;
+    border-width: 2px !important;
+  }
+
+  .tab-pane.specs {
+    td {
+      font-size: $font-size !important;
+      input, select {
+        font-size: $font-size !important;
+      }
+    }
+  }
+
+  .tab-pane.pricing {
+    td {
+      font-size: $font-size !important;
+      input, select {
+        font-size: $font-size !important;
+        height: 25px !important;
+      }
+    }
+  }
+}
