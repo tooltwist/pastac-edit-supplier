@@ -1,0 +1,212 @@
+
+<div class="alert alert-warning" ng-hide="ctrl.supplier">Unknown supplier</div>
+<!-- Pane for single record-->
+<div class="card pastac-edit-supplier" id="supplier-single-record-pane" ng-hide="!ctrl.supplier">
+  <div class="row">
+    <div class="col-md-12">
+      <h1>{{ctrl.headingForRecordPane}}  ({{ctrl.supplier.id}})</h1>
+      <div class="alert alert-danger" ng-hide="ctrl.supplier.deleted==0"><strong>Warning!&nbsp;&nbsp;</strong>&nbsp;This supplier has been marked as deleted.</div>
+      <div class="alert alert-danger" ng-hide="ctrl.supplier.deleted==1 || ctrl.supplier.is_active&gt;0"><strong>Warning!&nbsp;&nbsp;</strong>This supplier is not currently active.</div>
+      <!-- Buttons above-->
+      <div class="actions-wrap"><a class="btn pull-right btn-success" ng-click="ctrl.doSave()">Save</a><a class="btn pull-right" ng-click="ctrl.doBack()" ng-hide="!ctrl.backButton">Back</a></div>
+      <ul class="nav nav-tabs">
+        <li class="active"><a href="#pastac-edit-supplier-tab-details" data-toggle="tab">Details</a></li>
+        <li ng-hide="!ctrl.showProducts"><a href="#pastac-edit-supplier-tab-products" data-toggle="tab">Products</a></li>
+        <li><a href="#pastac-edit-supplier-tab-story" data-toggle="tab">Story</a></li>
+        <li><a href="#pastac-edit-supplier-tab-logo" data-toggle="tab">Logo</a></li>
+        <li><a href="#pastac-edit-supplier-tab-banner" data-toggle="tab">Banner</a></li>
+        <li><a href="#pastac-edit-supplier-tab-directory" data-toggle="tab">Directory Photo</a></li>
+        <li><a href="#pastac-edit-supplier-tab-contractual" data-toggle="tab">Contractual</a></li>
+      </ul><br>
+      <div class="tab-content clearfix">
+        <!-- Product details pane-->
+        <div class="tab-pane active" id="pastac-edit-supplier-tab-details">
+          <!-- The fields generated from metadata are inserted here.-->
+          <div id="supplier2_recordDiv"></div>
+          <!-- Admin-only fields generated from metadata are inserted here.-->
+          <div id="supplier2_adminDiv"></div>
+        </div>
+        <!-- Modal-->
+        <div class="modal fade" id="pastac-edit-supplier-add-product-modal" role="dialog">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header admin-colors">
+                <button class="close" type="button" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Add a new Product</h4>
+              </div>
+              <div class="modal-body">
+                <div class="form-group">
+                  <label for="pastac-edit-supplier-new-product-name">Name of new Product</label>
+                  <input class="form-control" id="pastac-edit-supplier-new-product-name" ng-model="ctrl.newProductName">
+                </div>
+                <div class="alert alert-danger" ng-hide="!ctrl.errmsg">{{ctrl.errmsg}}</div>
+              </div>
+              <div class="modal-footer admin-colors">
+                <button class="btn btn-danger" type="button" ng-click="ctrl.doNewProduct()" ng-disabled="ctrl.newProductInProgress">
+                  <div class="spinner glyphicon glyphicon-refresh" ng-hide="!ctrl.newProductInProgress"></div>Add {{ctrl.label}}
+                </button>
+                <button class="btn btn-danger" type="button" data-dismiss="modal">Close</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="tab-pane" id="pastac-edit-supplier-tab-products">
+          <div ng-hide="ctrl.currentUser.isAdmin"><a class="btn btn-danger btn-sm pull-right" data-toggle="modal" data-target="#pastac-edit-supplier-add-product-modal">Add a new Product</a><br><br></div>
+          <table class="table table-condensed table-hover">
+            <tr>
+              <th>Product Id</th>
+              <th>Name</th>
+              <!--th Displayed-->
+            </tr>
+            <tr ng-repeat="product in ctrl.products" Zng-click="ctrl.doSelectProduct(product)" Zng-class="{info: !product.is_displayed}">
+              <td>{{product.product_id}}</td>
+              <td>{{product.name}}</td>
+              <!--td {{product.is_displayed}}-->
+              <td><a class="btn btn-danger btn-xs pull-right" ng-click="ctrl.doSelectProduct(product)">edit</a></td>
+            </tr>
+          </table>
+        </div>
+        <div class="tab-pane" id="pastac-edit-supplier-tab-story">
+          <div class="form-group">
+            <label for="product-longDescription">Story</label>
+            <!-- See https://github.com/lemonde/angular-ckeditor-->
+            <div ckeditor="ctrl.ckeditorOptions" ng-model="ctrl.supplier.story" ready="onReady()"></div><br>
+          </div>
+        </div>
+        <!---->
+        <!--      Tab for loading the supplier logo-->
+        <!---->
+        <div class="tab-pane" id="pastac-edit-supplier-tab-logo">
+          <h3>Supplier Logo</h3>
+          <div class="row">
+            <div class="col-md-3"><img class="img-responsive" ng-src="{{ctrl.supplier._logo_thumbnail}}"></div>
+            <div class="col-md-1"></div>
+            <div class="col-md-8">
+              <div class="image-loader">
+                <div class="head"><a href="#pastac-edit-supplier-tab-load-logo" role="tab" data-toggle="tab"><i class="fa fa-picture-o"></i>Upload Image</a></div>
+                <div class="content">               
+                  <div class="tab-pane" id="pastac-edit-supplier-tab-load-logo" role="tabpanel">
+                    <!-- Drop area-->
+                    <div class="drop-photo drop-box" ngf-select ngf-drop ng-model="ctrl.logoFile" ngf-drag-over-class="'dragover'" ngf-multiple="false" ngf-pattern="'image/*,video/*'" ng-hide="ctrl.logoFile"><i class="fa fa-picture-o"></i><br><span>Select File</span><span ng-show="ctrl.dropAvailable">&nbsp;or Drop File</span></div>
+                    <!-- Preview image and show loading progress--><img class="img-responsive" ngf-src="ctrl.logoFile || '/assets/images/cleardot.png'" style="max-height: 400px;">
+                    <!--video(controls ngf-src="ctrl.logoFile")-->
+                    <div id="percentage">
+                      <div id="progress" ng-hide="!ctrl.showProgressBar('logo')">
+                        <div class="small green"><br>Loading {{ctrl.logoFilename}}
+                          &nbsp;&nbsp;&nbsp; size={{ctrl.logoFilesize}} bytes
+                          &nbsp;&nbsp;&nbsp; ({{ctrl.logoPercentage}}% complete)<br>
+                          <div class="progress" style="height: 10px;">
+                            <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="{{ctrl.logoPercentage}}" aria-valuemin="0" aria-valuemax="100" ng-style="{width : ( ctrl.logoPercentage + '%' ) }">
+                              <div class="sr-only">{{ctrl.logoPercentage}}% Complete (warning)</div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div id="processing" ng-hide="!ctrl.showProcessing('logo')">
+                        <div class="small green"><br><i class="fa fa-refresh fa-spin fa-fw"></i>
+                          <!--  .sr-only Loading...-->Processing image
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="controls" ng-hide="!ctrl.logoFile || ctrl.showProgressBar('logo') || ctrl.showProcessing('logo')">
+                  <!-- The next line sets the height of the footer, when all else is hidden--><a>&nbsp;</a><a class="post" ng-click="ctrl.cancelPost('logo')"><i class="fa fa-remove"></i>Cancel</a><a class="post" ng-click="ctrl.doUploadImage(ctrl.supplier, 'logo')"><i class="fa fa-send-o"></i>Upload</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="tab-pane" id="pastac-edit-supplier-tab-banner">
+          <h3>Supplier Banner</h3>
+          <div class="row">
+            <div class="col-md-12"><img class="img-responsive" ng-src="{{ctrl.supplier._banner_banner}}"></div>
+            <div class="col-md-12">  
+              <div class="image-loader">             
+                <div class="head"><a href="#pastac-edit-supplier-tab-load-banner" role="tab" data-toggle="tab"><i class="fa fa-picture-o"></i>Upload Image</a></div>
+                <div class="content">               
+                  <div class="tab-pane" id="pastac-edit-supplier-tab-load-banner" role="tabpanel">
+                    <!-- Drop area-->
+                    <div class="drop-photo drop-box" ngf-select ngf-drop ng-model="ctrl.bannerFile" ngf-drag-over-class="'dragover'" ngf-multiple="false" ngf-pattern="'image/*,video/*'" ng-hide="ctrl.bannerFile"><i class="fa fa-picture-o"></i><br><span>Select File</span><span ng-show="ctrl.dropAvailable">&nbsp;or Drop File</span></div>
+                    <!-- Preview image and show loading progress--><img class="img-responsive" ngf-src="ctrl.bannerFile || '/assets/images/cleardot.png'" style="max-height: 400px;">
+                    <div id="percentage">
+                      <div id="progress" ng-hide="!ctrl.showProgressBar('banner')">
+                        <div class="small green"><br>Loading {{ctrl.bannerFilename}}
+                          &nbsp;&nbsp;&nbsp; size={{ctrl.bannerFilesize}} bytes
+                          &nbsp;&nbsp;&nbsp; ({{ctrl.bannerPercentage}}% complete)<br>
+                          <div class="progress" style="height: 10px;">
+                            <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="{{ctrl.bannerPercentage}}" aria-valuemin="0" aria-valuemax="100" ng-style="{width : ( ctrl.bannerPercentage + '%' ) }">
+                              <div class="sr-only">{{ctrl.bannerPercentage}}% Complete (warning)</div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div id="processing" ng-hide="!ctrl.showProcessing('banner')">
+                        <div class="small green"><br><i class="fa fa-refresh fa-spin fa-fw"></i>
+                          <!--  .sr-only Loading...-->Processing image
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="controls" ng-hide="!ctrl.bannerFile || ctrl.showProgressBar('banner') || ctrl.showProcessing('banner')">
+                  <!-- The next line sets the height of the footer, when all else is hidden--><a>&nbsp;</a><a class="post" ng-click="ctrl.cancelPost('banner')"><i class="fa fa-remove"></i>Cancel</a><a class="post" ng-click="ctrl.doUploadImage(ctrl.supplier, 'banner')"><i class="fa fa-send-o"></i>Upload</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!---->
+        <!--  Tab to load directory_photo image-->
+        <!---->
+        <div class="tab-pane" id="pastac-edit-supplier-tab-directory">
+          <h3>Directory Photo</h3>
+          <div class="row">
+            <div class="col-md-3"><img class="img-responsive center" ng-src="{{ctrl.supplier._directory_photo_thumbnail}}"></div>
+            <div class="col-md-1"></div>
+            <div class="col-md-8">
+              <div class="image-loader">
+                <!-- Load image header-->
+                <div class="head"><a href="#pastac-edit-supplier-tab-load-logo" role="tab" data-toggle="tab"><i class="fa fa-picture-o"></i>Upload Image</a></div>
+                <div class="content">               
+                  <div class="tab-pane" id="pastac-edit-supplier-tab-load-logo" role="tabpanel">
+                    <!-- Drop area-->
+                    <div class="drop-photo drop-box" ngf-select ngf-drop ng-model="ctrl.directory_photoFile" ngf-drag-over-class="'dragover'" ngf-multiple="false" ngf-pattern="'image/*,video/*'" ng-hide="ctrl.directory_photoFile"><i class="fa fa-picture-o"></i><br><span>Select File</span><span ng-show="ctrl.dropAvailable">&nbsp;or Drop File</span></div>
+                    <!-- Preview image and show loading progress--><img class="img-responsive" ngf-src="ctrl.directory_photoFile || '/assets/images/cleardot.png'" style="max-height: 400px;">
+                    <div id="percentage">
+                      <div id="progress" ng-hide="!ctrl.showProgressBar('directory_photo')">
+                        <div class="small green"><br>Loading {{ctrl.directory_photoFilename}}
+                          &nbsp;&nbsp;&nbsp; size={{ctrl.directory_photoFilesize}} bytes
+                          &nbsp;&nbsp;&nbsp; ({{ctrl.directory_photoPercentage}}% complete)<br>
+                          <div class="progress" style="height: 10px;">
+                            <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="{{ctrl.directory_photoPercentage}}" aria-valuemin="0" aria-valuemax="100" ng-style="{width : ( ctrl.directory_photoPercentage + '%' ) }">
+                              <div class="sr-only">{{ctrl.directory_photoPercentage}}% Complete (warning)</div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div id="processing" ng-hide="!ctrl.showProcessing('directory_photo')">
+                        <div class="small green"><br><i class="fa fa-refresh fa-spin fa-fw"></i>
+                          <!--  .sr-only Loading...-->Processing image
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="controls" ng-hide="!ctrl.directory_photoFile || ctrl.showProgressBar('directory_photo') || ctrl.showProcessing('directory_photo')">
+                  <!-- The next line sets the height of the footer, when all else is hidden--><a>&nbsp;</a><a class="post" ng-click="ctrl.cancelPost('directory_photo')"><i class="fa fa-remove"></i>Cancel</a><a class="post" ng-click="ctrl.doUploadImage(ctrl.supplier, 'directory_photo')"><i class="fa fa-send-o"></i>Upload</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Contractual details pane-->
+        <div class="tab-pane" id="pastac-edit-supplier-tab-contractual">
+          <!-- The fields generated from metadata are inserted here.-->
+          <div id="supplier2_contractualDiv"></div>
+        </div>
+      </div>
+      <!-- Buttons below-->
+    </div>
+  </div>
+</div>

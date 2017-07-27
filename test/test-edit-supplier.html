@@ -126,14 +126,6 @@
     </div>
   </div>
 </body>
-<script src="../bower_components/jquery/dist/jquery.js" type="text/javascript"></script>
-<script src="../bower_components/angular/angular.min.js" type="text/javascript"></script>
-<script src="../bower_components/bootstrap/dist/js/bootstrap.js" type="text/javascript"></script>
-<script src="../bower_components/jwt-decode/build/jwt-decode.min.js" type="text/javascript"></script>
-
-<script src="/bower_components/ckeditor/ckeditor.js" type="text/javascript"></script>
-<script src="/bower_components/angular-ckeditor/angular-ckeditor.min.js" type="text/javascript"></script>
-<script src="/assets/vendor/tooltwist-views-client/tooltwist-views-client.js" type="text/javascript"></script>
 
 <!--
 <script src="http://drinkcircle-mvp.s3-website-ap-southeast-2.amazonaws.com/assets/vendor/authservice/authservice.js", type="text/javascript"></script>
@@ -153,6 +145,15 @@ var TEASERVICE_APIKEY = 'test';
 const CLOUDINARY_CLOUD_NAME = 'twist-resources';
 
 </script>
+
+<script src="../bower_components/jquery/dist/jquery.js" type="text/javascript"></script>
+<script src="../bower_components/angular/angular.min.js" type="text/javascript"></script>
+<script src="../bower_components/bootstrap/dist/js/bootstrap.js" type="text/javascript"></script>
+<script src="../bower_components/jwt-decode/build/jwt-decode.min.js" type="text/javascript"></script>
+
+<script src="/bower_components/ckeditor/ckeditor.js" type="text/javascript"></script>
+<script src="/bower_components/angular-ckeditor/angular-ckeditor.min.js" type="text/javascript"></script>
+<script src="/assets/vendor/tooltwist-views-client/tooltwist-views-client.js" type="text/javascript"></script>
 <script src="/assets/vendor/teaservice/teaservice.js" type="text/javascript"></script>
 <script src="../bower_components/pastac-login/dist/tmp-authservice.js" type="text/javascript"></script>
 <script src="../bower_components/pastac-login/dist/pastac-login.js" type="text/javascript"></script>
@@ -179,13 +180,8 @@ module.controller('myCtrl', function($scope, $timeout) {
       $scope.currentUser = user;
       $scope.jwt = jwt;
     },
-    onAddSupplier: function(successResponse, errorResponse) {
-      //alert('handler.onAddSupplier()')
-
-      if (successResponse) {
-        var supplierId = successResponse.supplierId;
-        alert('New supplier is ' + supplierId)
-      }
+    onLoadSupplier: function(supplier) {
+      console.log('handler.onLoadSupplier()', supplier);
     },
     onLogoUpdate: function(supplier) {
       alert('handler.onLogoUpdate(): ' + supplier.logo);
@@ -195,6 +191,12 @@ module.controller('myCtrl', function($scope, $timeout) {
     },
     onDirectoryPhotoUpdate: function(supplier) {
       alert('handler.onDirectoryPhotoUpdate(): ' + supplier.directory_photo);
+    },
+    onNewProduct: function(productId) {
+      alert('handler.onNewProduct: productId=' + productId)
+    },
+    onSelectProduct: function(product) {
+      alert('handler.onSelectProduct: productId=' + product.product_id)
     }
   }//= handler
 

@@ -28,16 +28,18 @@ block content
         ul.nav.nav-tabs
           li.active
             a(href="#pastac-edit-supplier-tab-details" data-toggle="tab") Details
+          li(ng-hide="!ctrl.showProducts")
+            a(href="#pastac-edit-supplier-tab-products" data-toggle="tab") Products
           li
             a(href="#pastac-edit-supplier-tab-story" data-toggle="tab") Story
           li
-            a(href="#pastac-edit-supplier-tab-logo" data-toggle="tab").active Logo
+            a(href="#pastac-edit-supplier-tab-logo" data-toggle="tab") Logo
           li
             a(href="#pastac-edit-supplier-tab-banner" data-toggle="tab") Banner
           li
             a(href="#pastac-edit-supplier-tab-directory" data-toggle="tab") Directory Photo
-          li(ng-hide="!ctrl.showProducts")
-            a(href="#pastac-edit-supplier-tab-products" data-toggle="tab") Products
+          li
+            a(href="#pastac-edit-supplier-tab-contractual" data-toggle="tab") Contractual
         br
 
 
@@ -50,12 +52,53 @@ block content
           
 
           // Product details pane
-          #pastac-edit-supplier-tab-details.tab-pane.activeZ
+          #pastac-edit-supplier-tab-details.tab-pane.active
             // The fields generated from metadata are inserted here.
             #supplier2_recordDiv
 
             // Admin-only fields generated from metadata are inserted here.
             #supplier2_adminDiv
+
+
+              
+          // Modal
+          #pastac-edit-supplier-add-product-modal.modal.fade(role="dialog")
+            .modal-dialog
+              .modal-content
+                .modal-header.admin-colors
+                  button.close(type="button" data-dismiss="modal") &times;
+                  h4.modal-title Add a new Product
+                .modal-body
+                  .form-group
+                    label(for="pastac-edit-supplier-new-product-name") Name of new Product
+                    input#pastac-edit-supplier-new-product-name.form-control(ng-model="ctrl.newProductName")
+                  .alert.alert-danger(ng-hide="!ctrl.errmsg")
+                    | {{ctrl.errmsg}}
+                .modal-footer.admin-colors
+                  button.btn.btn-danger(type="button" ng-click="ctrl.doNewProduct()" ng-disabled="ctrl.newProductInProgress")
+                    .spinner.glyphicon.glyphicon-refresh(ng-hide="!ctrl.newProductInProgress")
+                    | Add {{ctrl.label}}
+                  button.btn.btn-danger(type="button" data-dismiss="modal") Close
+
+
+
+          #pastac-edit-supplier-tab-products.tab-pane
+            div(ng-hide="ctrl.currentUser.isAdmin")
+              a.btn.btn-danger.btn-sm.pull-right(data-toggle="modal" data-target="#pastac-edit-supplier-add-product-modal") Add a new Product
+              br
+              br
+            table.table.table-condensed.table-hover
+              tr
+                th Product Id
+                th Name
+                //th Displayed
+              tr(ng-repeat="product in ctrl.products" Zng-click="ctrl.doSelectProduct(product)" Zng-class="{info: !product.is_displayed}")
+                td {{product.product_id}}
+                td {{product.name}}
+                //td {{product.is_displayed}}
+                td
+                  a.btn.btn-danger.btn-xs.pull-right(ng-click="ctrl.doSelectProduct(product)") edit
+
               
               
           #pastac-edit-supplier-tab-story.tab-pane
@@ -69,7 +112,7 @@ block content
           //
           //      Tab for loading the supplier logo
           //
-          #pastac-edit-supplier-tab-logo.tab-pane.active
+          #pastac-edit-supplier-tab-logo.tab-pane
             h3 Supplier Logo
             .row
               .col-md-3
@@ -260,42 +303,14 @@ block content
                       | Upload
                     //- a
                   //- controls
-              
-          // Modal
-          #pastac-edit-supplier-add-product-modal.modal.fade(role="dialog")
-            .modal-dialog
-              .modal-content
-                .modal-header.admin-colors
-                  button.close(type="button" data-dismiss="modal") &times;
-                  h4.modal-title Add a new Product
-                .modal-body
-                  .form-group
-                    label(for="pastac-edit-supplier-new-product-name") Name of new Product
-                    input#pastac-edit-supplier-new-product-name.form-control(ng-model="ctrl.productName")
-                  .alert.alert-danger(ng-hide="!ctrl.errmsg")
-                    | {{ctrl.errmsg}}
-                .modal-footer.admin-colors
-                  button.btn.btn-danger(type="button" ng-click="ctrl.doNewProduct()" ng-disabled="ctrl.newProductInProgress")
-                    .spinner.glyphicon.glyphicon-refresh(ng-hide="!ctrl.newProductInProgress")
-                    | Add {{ctrl.label}}
-                  button.btn.btn-danger(type="button" data-dismiss="modal") Close
+                  
+                  
+                  
+          // Contractual details pane
+          #pastac-edit-supplier-tab-contractual.tab-pane
+            // The fields generated from metadata are inserted here.
+            #supplier2_contractualDiv
 
-          
-          
-          #pastac-edit-supplier-tab-products.tab-pane
-            div(ng-hide="ctrl.currentUser.isAdmin")
-              a.btn.btn-danger.btn-sm.pull-right(data-toggle="modal" data-target="#pastac-edit-supplier-add-product-modal") Add a new Product
-              br
-              br
-            table.table.table-condensed.table-hover
-              tr
-                th Product Id
-                th Name
-                th Displayed
-              tr(ng-repeat="product in ctrl.products" ng-click="ctrl.doSelectProduct(product.productId)")
-                td {{product.productId}}
-                td {{product.name}}
-                td {{product.isDisplayed}}
 
 
 
